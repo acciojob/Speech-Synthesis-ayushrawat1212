@@ -37,6 +37,108 @@
   const stopButton = document.querySelector('#stop');
 
   //Your code goes here
+
+	  //step 1
+  function populateVoices() {
+
+    voices = speechSynthesis.getVoices();
+
+    voicesDropdown.innerHTML = "";
+
+    if(voices.length === 0) {
+        const option = document.createElement("option");
+
+        option.textContent = "No voices available";
+        option.value = "";
+
+        voicesDropdown.appendChild(option); 
+    }
+    else {
+        voices.forEach(function(voice, index) {
+
+            const option = document.createElement("option");
+
+            option.textContent = voice.name;
+            option.value = index;
+
+            voicesDropdown.appendChild(option); 
+        });
+    }
+    
+  }
+
+  populateVoices();
+
+  speechSynthesis.addEventListener("voiceschanged", populateVoices);
+
+
+  //step 2
+  const textInput = document.querySelector('[name="text"]');
+
+    function setSpeech() {
+        msg.text = textInput.value;
+    }
+
+    speakButton.addEventListener("click", function() {
+
+        if (!textInput.value.trim()) return;
+
+        setSpeech();
+        setRate();
+        setPitch();
+        setVoice();
+
+        speechSynthesis.speak(msg);
+    });
+
+
+    //step 3
+   stopButton.addEventListener("click", function() {
+    speechSynthesis.cancel();
+   }); 
+
+
+   //step 4 Set the Speech Rate
+   const rateInput = document.querySelector('[name="rate"]');
+
+    function setRate() {
+        msg.rate = Number(rateInput.value);
+    }
+
+    rateInput.addEventListener("input", setRate);
+
+
+    //step 5 Set Speech Pitch
+    const pitchInput = document.querySelector('[name="pitch"]');
+
+    function setPitch() {
+        msg.pitch = Number(pitchInput.value);
+    }
+
+    pitchInput.addEventListener("input", setPitch);
+
+
+    //step 6 Voice Selection
+    function setVoice() {
+        msg.voice = voices[voicesDropdown.value];
+    }
+
+
+    //step 7 Change Voice While Speaking
+    voicesDropdown.addEventListener("change", function() {        
+        setVoice();
+
+        if(speechSynthesis.speaking) {
+            speechSynthesis.cancel();
+
+            setSpeech();
+            setRate();
+            setPitch();
+
+            speechSynthesis.speak(msg);
+        }
+    });
+	
 </script>
 
 </body>
